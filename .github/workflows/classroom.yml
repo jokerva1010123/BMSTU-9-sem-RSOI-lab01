@@ -2,21 +2,50 @@ name: GitHub Classroom Workflow
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 jobs:
   build:
-    name: Autograding
+    name: Build, run and test code
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v2
+        with: 
+          dotnet-version: 8.0.x
+      
+      - name: Build
+        run: dotnet restore "Person/Person/Person.csproj"
 
-      # TODO build, test and deploy project
-
+      - name: Run
+        run: dotnet publish "Person/Person/Person.csproj" -c Release -o publish --no-restore
+      
+      - name: Test
+        run: 
+          dotnet restore "Person/PersonUnitTest/PersonUnitTest.csproj" && dotnet test "Person/PersonUnitTest/PersonUnitTest.csproj" --no-restore
+  deploy:
+    name: Deploy
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to api
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
+  run_test:
+    name: Run API Tests
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Run API Tests
         uses: matt-ball/newman-action@master
         with:
@@ -25,16 +54,15 @@ jobs:
           delayRequest: 100
           reporters: '[ "cli" ]'
 
+  autograding:
+    name: Autograding
+    needs: [run_test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - name: Autograding
         uses: education/autograding@v1
         continue-on-error: true
-
-      - name: Github auto grader mark
-        uses: Romanow/google-sheet-autograder-marker@v1.0
-        with:
-          google_token: ${{secrets.GOOGLE_API_KEY}}
-          sheet_id: "1xkgjUX6Qmk7rdJG-QPOToav-HWWtthJjnShIKnw3oIY"
-          homework_number: 1
-          user_column: 'D'
-          column_offset: 'F'
-          mark: "'+"
