@@ -5,37 +5,31 @@ namespace Service
 {
     public class PersonService
     {
-        private readonly IPersonDA _personDA;
-
+        private readonly IPersonDA personDA;
         public PersonService(IPersonDA personDA)
         {
-            _personDA = personDA;
+            this.personDA = personDA;
         }
-
         public List<PersonDB> GetAllPeople()
         {
-            return _personDA.FindAll();
+            return personDA.GetAll();
         }
-
         public PersonDB GetPersonById(int personId)
         {
-            var person = _personDA.FindById(personId);
+            var person = personDA.GetById(personId);
             return person;
         }
-
         public PersonDB AddPerson(PersonDB person)
         {
-            return _personDA.Add(person);
+            return personDA.Add(person);
         }
-
-        public ExitCode PatchPerson(PersonDB person)
+        public ExitCode UpdatePerson(PersonDB person)
         {
-            return _personDA.Patch(person);
+            return personDA.Update(person);
         }
-
         public ExitCode DeletePersonById(int personId)
         {
-            return _personDA.DeleteById(personId);
+            return personDA.DeleteById(personId);
         }
     }
 }

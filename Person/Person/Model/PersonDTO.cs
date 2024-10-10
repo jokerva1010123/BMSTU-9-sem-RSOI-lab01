@@ -7,7 +7,6 @@
         public int Age { get; set; }
         public string Address { get; set; }
         public string Work { get; set; }
-
         public PersonDTO() 
         {
             Id = 0;
@@ -16,7 +15,6 @@
             Address = "string";
             Work = "string";
         }
-
         public PersonDTO(PersonDB person)
         {
             Id = person.id;
@@ -25,7 +23,6 @@
             Address = person.address;
             Work = person.work;
         }
-
         public PersonDB GetPerson(int personId = 0)
         {
             var person = new PersonDB()
@@ -36,7 +33,6 @@
                 address = Address,
                 work = Work
             };
-
             return person;
         }
     }

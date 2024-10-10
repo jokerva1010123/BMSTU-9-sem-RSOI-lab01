@@ -8,13 +8,12 @@ namespace Repository
         Constraint,
         Error
     }
-
     public interface IPersonDA
     {
-        List<PersonDB> FindAll();
-        PersonDB FindById(int id);
+        List<PersonDB> GetAll();
+        PersonDB GetById(int id);
         PersonDB Add(PersonDB obj);
-        ExitCode Patch(PersonDB obj);
+        ExitCode Update(PersonDB obj);
         ExitCode DeleteById(int id);
     }
 }
