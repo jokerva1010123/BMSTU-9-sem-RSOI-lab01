@@ -2,7 +2,6 @@
 using DBContext;
 using Repository;
 using DataAccess;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace PeopleTests
 {
@@ -17,7 +16,7 @@ namespace PeopleTests
             builder.UseInMemoryDatabase("person");
 
             peopleContext = new AppDbContext(builder.Options);
-            personRepository = new PersonDA(peopleContext, NullLogger<PersonDA>.Instance);
+            personRepository = new PersonDA(peopleContext);
         }
 
         protected virtual void Dispose(bool disposing)

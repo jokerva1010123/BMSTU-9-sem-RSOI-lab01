@@ -13,10 +13,8 @@ namespace PeopleTests
             // Arrange
             var expPerson = new PersonBuilder().Build();
             var expPeople = new List<PersonDB>() { expPerson };
-
             var mock = new Mock<IPersonDA>();
-            mock.Setup(x => x.FindAll())
-                .Returns(expPeople);
+            mock.Setup(x => x.GetAll()) .Returns(expPeople);
             var personService = new PersonService(mock.Object);
 
             // Act
@@ -26,20 +24,14 @@ namespace PeopleTests
             Assert.NotNull(expPeople);
             Assert.Equal(expPeople, actPeople);
         }
-
         [Fact]
         public void FindById_FirstElement_NotNull()
         {
             const int personId = 1;
-
             // Arrange
-            var expPerson = new PersonBuilder()
-                .WherePersonId(personId)
-                .Build();
-
+            var expPerson = new PersonBuilder().WherePersonId(personId).Build();
             var mock = new Mock<IPersonDA>();
-            mock.Setup(x => x.FindById(personId))
-                .Returns(expPerson);
+            mock.Setup(x => x.GetById(personId)).Returns(expPerson);
             var personService = new PersonService(mock.Object);
 
             // Act
@@ -49,7 +41,6 @@ namespace PeopleTests
             Assert.NotNull(expPerson);
             Assert.Equal(expPerson, actPerson);
         }
-
         [Fact]
         public void AddPerson_Ok()
         {
@@ -62,14 +53,12 @@ namespace PeopleTests
             accessObject.personRepository.Add(personToAdd);
 
             // Assert
-            var addedPerson = accessObject.personRepository.FindById(personToAdd.id);
-
+            var addedPerson = accessObject.personRepository.GetById(personToAdd.id);
             Assert.NotNull(addedPerson);
             Assert.Equal(personToAdd, addedPerson);
 
             Cleanup(accessObject);
         }
-
         [Fact]
         public void UpdatePerson_Ok()
         {
@@ -80,16 +69,15 @@ namespace PeopleTests
 
             // Act
             personToUpdate.age += 5;
-            accessObject.personRepository.Patch(personToUpdate);
+            accessObject.personRepository.Update(personToUpdate);
 
             // Assert
-            var updatedPerson = accessObject.personRepository.FindById(personToUpdate.id);
+            var updatedPerson = accessObject.personRepository.GetById(personToUpdate.id);
             Assert.NotNull(updatedPerson);
             Assert.Equal(personToUpdate, updatedPerson);
 
             Cleanup(accessObject);
         }
-
         [Fact]
         public void DeletePersonById_Ok()
         {
@@ -103,12 +91,11 @@ namespace PeopleTests
             accessObject.personRepository.DeleteById(id);
 
             // Assert
-            var removedPerson = accessObject.personRepository.FindById(id);
+            var removedPerson = accessObject.personRepository.GetById(id);
             Assert.Null(removedPerson);
 
             Cleanup(accessObject);
         }
-
         PersonDB CreatePerson()
         {
             var person = new PersonDB()
@@ -121,14 +108,12 @@ namespace PeopleTests
             };
             return person;
         }
-
         void AddEntity(PeopleAccessObject accessObject, PersonDB person)
         {
             accessObject.peopleContext.ChangeTracker.Clear();
             accessObject.peopleContext.People.Add(person);
             accessObject.peopleContext.SaveChanges();
         }
-
         void Cleanup(PeopleAccessObject accessObject)
         {
             accessObject.peopleContext.ChangeTracker.Clear();
